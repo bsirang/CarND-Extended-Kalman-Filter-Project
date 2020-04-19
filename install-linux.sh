@@ -1,13 +1,15 @@
 #!/bin/bash
 source /etc/os-release || echo 'Warning: /etc/os-release was not found'
 
-if [[ " $ID_LIKE " == *' archlinux '* ]]; then
+if [[ "$ID" == 'arch' ]]; then
+  echo "Detected Arch Linux distribution."
   sudo pacman -S git libuv openssl gcc cmake make
 else
   if [[ ! " $ID_LIKE " == *' debian '* ]]; then
-    echo 'Warning: unidentified Linux distribution, assuming Debian-like'
+    echo 'Error: unidentified Linux distribution. Modify this script to add support for your distribution.'
+    exit 1
   fi
-
+  echo "Detected Debian-like distribution. Using apt."
   sudo apt-get update
   sudo apt-get install git libuv1-dev libssl-dev gcc g++ cmake make
 fi
