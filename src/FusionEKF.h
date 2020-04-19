@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include "Eigen/src/Core/util/DisableStupidWarnings.h"
 #include "Eigen/Dense"
 #include "kalman_filter.h"
 #include "measurement_package.h"
@@ -31,13 +32,16 @@ class FusionEKF {
   KalmanFilter ekf_;
 
  private:
+  // Process noise values
+  static constexpr float noise_ax = 9.0f;
+  static constexpr float noise_ay = 9.0f;
+
   // check whether the tracking toolbox was initialized or not (first measurement)
-  bool is_initialized_;
+  bool is_initialized_{false};
 
   // previous timestamp
-  long long previous_timestamp_;
+  long long previous_timestamp_{0};
 
-  // tool object used to compute Jacobian and RMSE
   Eigen::MatrixXd R_laser_;
   Eigen::MatrixXd R_radar_;
   Eigen::MatrixXd H_laser_;
