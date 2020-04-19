@@ -2,6 +2,8 @@
 #define TOOLS_H_
 
 #include <vector>
+
+#include "Eigen/src/Core/util/DisableStupidWarnings.h"
 #include "Eigen/Dense"
 
 namespace Tools {
