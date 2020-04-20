@@ -1,10 +1,9 @@
 
 #include "radar_lidar_ekf.h"
+
 #include "tools.h"
 
-RadarLidarEKF::RadarLidarEKF() : x_(kNumStates),
-                                 P_(kNumStates, kNumStates)
-{
+RadarLidarEKF::RadarLidarEKF() : x_(kNumStates), P_(kNumStates, kNumStates) {
   x_ << 0, 0, 0, 0;
 
   P_ << 1, 0, 0, 0,
@@ -12,7 +11,6 @@ RadarLidarEKF::RadarLidarEKF() : x_(kNumStates),
         0, 0, 1000, 0,
         0, 0, 0, 1000;
 }
-
 
 void RadarLidarEKF::processMeasurement(const MeasurementPackage &measurement_pack) {
   if (!is_initialized_) {
@@ -31,8 +29,6 @@ void RadarLidarEKF::processMeasurement(const MeasurementPackage &measurement_pac
   predict(dt);
   update(measurement_pack);
 }
-
-
 
 void RadarLidarEKF::initializeWithRadar(const MeasurementPackage &measurement_pack) {
   // previous_timestamp_ = measurement_pack.timestamp_;
@@ -68,10 +64,9 @@ Eigen::MatrixXd RadarLidarEKF::generateQ(double dt) {
   float dt_3 = dt_2 * dt;
   float dt_4 = dt_3 * dt;
   MatrixXd Q(kNumStates, kNumStates);
-  Q <<  dt_4/4*kNoiseAx, 0, dt_3/2*kNoiseAx, 0,
-         0, dt_4/4*kNoiseAy, 0, dt_3/2*kNoiseAy,
-         dt_3/2*kNoiseAx, 0, dt_2*kNoiseAx, 0,
-         0, dt_3/2*kNoiseAy, 0, dt_2*kNoiseAy;
+  Q << dt_4 / 4 * kNoiseAx, 0, dt_3 / 2 * kNoiseAx, 0, 0, dt_4 / 4 * kNoiseAy, 0,
+      dt_3 / 2 * kNoiseAy, dt_3 / 2 * kNoiseAx, 0, dt_2 * kNoiseAx, 0, 0, dt_3 / 2 * kNoiseAy, 0,
+      dt_2 * kNoiseAy;
   return Q;
 }
 
@@ -92,7 +87,7 @@ void RadarLidarEKF::updateRadar(const VectorXd &z) {
        0, 0, 0.09;
 
   MatrixXd Hj = Tools::CalculateJacobian(x_);
-  updateFilter(z, Hj, R, [](const Eigen::VectorXd & x, const Eigen::VectorXd & z) {
+  updateFilter(z, Hj, R, [](const Eigen::VectorXd &x, const Eigen::VectorXd &z) {
     VectorXd y = z - Tools::CartesianToPolar(x);
     y(1) = Tools::WrapAngle(y(1));
     return y;
@@ -101,18 +96,17 @@ void RadarLidarEKF::updateRadar(const VectorXd &z) {
 
 void RadarLidarEKF::updateLidar(const VectorXd &z) {
   MatrixXd R(kNumLidarStates, kNumLidarStates);
-  R << 0.0225, 0,
-       0, 0.0225;
+  R << 0.0225, 0, 0, 0.0225;
   MatrixXd H(kNumLidarStates, kNumStates);
-  H << 1, 0, 0, 0,
-       0, 1, 0, 0;
-  updateFilter(z, H, R, [H](const Eigen::VectorXd & x, const Eigen::VectorXd & z) {
+  H << 1, 0, 0, 0, 0, 1, 0, 0;
+  updateFilter(z, H, R, [H](const Eigen::VectorXd &x, const Eigen::VectorXd &z) {
     VectorXd y = z - (H * x);
     return y;
   });
 }
 
-void RadarLidarEKF::updateFilter(const VectorXd &z, const MatrixXd &H, const MatrixXd &R, update_fn fn) {
+void RadarLidarEKF::updateFilter(const VectorXd &z, const MatrixXd &H, const MatrixXd &R,
+                                 update_fn fn) {
   VectorXd y = fn(x_, z);
   MatrixXd Ht = H.transpose();
   MatrixXd S = H * P_ * Ht + R;
@@ -120,7 +114,7 @@ void RadarLidarEKF::updateFilter(const VectorXd &z, const MatrixXd &H, const Mat
   MatrixXd PHt = P_ * Ht;
   MatrixXd K = PHt * Si;
 
-  //new estimate
+  // new estimate
   x_ = x_ + (K * y);
   long x_size = x_.size();
   MatrixXd I = MatrixXd::Identity(x_size, x_size);

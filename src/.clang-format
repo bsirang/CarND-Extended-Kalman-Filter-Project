@@ -1,0 +1,8 @@
+BasedOnStyle: Google
+TabWidth: 2
+ColumnLimit: 100
+Language: Cpp
+# Use features of C++11, C++14 and C++1z (e.g. A<A<int>> instead of A<A<int> >).
+Standard: Cpp11
+AlignEscapedNewlinesLeft: false
+ConstructorInitializerAllOnOneLineOrOnePerLine: true

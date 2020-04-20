@@ -1,38 +1,39 @@
 #include "tools.h"
+
 #include <iostream>
 #include <stdexcept>
 
-using Eigen::VectorXd;
 using Eigen::MatrixXd;
+using Eigen::VectorXd;
 
 VectorXd Tools::CalculateRMSE(const std::vector<VectorXd> &estimations,
                               const std::vector<VectorXd> &ground_truth) {
-   if (estimations.size() != ground_truth.size()) {
-     throw std::invalid_argument("CalculateRMSE - input vector size mismatch!");
-   }
-   size_t n = estimations.size();
-   if (n == 0) {
-     throw std::invalid_argument("CalculateRMSE - input vectors are empty!");
-   }
+  if (estimations.size() != ground_truth.size()) {
+    throw std::invalid_argument("CalculateRMSE - input vector size mismatch!");
+  }
+  size_t n = estimations.size();
+  if (n == 0) {
+    throw std::invalid_argument("CalculateRMSE - input vectors are empty!");
+  }
 
-   VectorXd rmse(estimations[0].size());
-   rmse << 0, 0, 0, 0;
+  VectorXd rmse(estimations[0].size());
+  rmse << 0, 0, 0, 0;
 
-   for (size_t i = 0; i < n; ++i) {
-     VectorXd temp = (estimations[i] - ground_truth[i]);
-     temp = temp.array() * temp.array();
-     rmse = rmse + temp;
-   }
+  for (size_t i = 0; i < n; ++i) {
+    VectorXd temp = (estimations[i] - ground_truth[i]);
+    temp = temp.array() * temp.array();
+    rmse = rmse + temp;
+  }
 
-   rmse = rmse.array() / static_cast<float>(n);
-   return rmse;
+  rmse = rmse.array() / static_cast<float>(n);
+  return rmse;
 }
 
-MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
+MatrixXd Tools::CalculateJacobian(const VectorXd &x_state) {
   if (x_state.size() != 4) {
     throw std::invalid_argument("CalculateJacobian - Invalid state vector size. Must equal 4.");
   }
-  MatrixXd Hj(3,4);
+  MatrixXd Hj(3, 4);
   // recover state parameters
   float px = x_state(0);
   float py = x_state(1);
@@ -41,8 +42,8 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
 
   // check division by zero
   if (px == 0.0f && py == 0.0f) {
-      std::cout << "Avoiding divide by zero!" << std::endl;
-      return MatrixXd::Zero(3, 4);
+    std::cout << "Avoiding divide by zero!" << std::endl;
+    return MatrixXd::Zero(3, 4);
   }
 
   // compute the Jacobian matrix
@@ -72,7 +73,7 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
   return Hj;
 }
 
-VectorXd Tools::CartesianToPolar(const VectorXd & x) {
+VectorXd Tools::CartesianToPolar(const VectorXd &x) {
   VectorXd r(3);
   float px = x(0);
   float py = x(1);

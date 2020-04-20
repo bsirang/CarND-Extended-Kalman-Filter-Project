@@ -1,20 +1,23 @@
 #ifndef RADAR_LIDAR_EKF_H_
 #define RADAR_LIDAR_EKF_H_
 
+#include <functional>
+
 #include "Eigen/Dense"
 #include "measurement_package.h"
-#include <functional>
 
 class RadarLidarEKF {
   using VectorXd = Eigen::VectorXd;
   using MatrixXd = Eigen::MatrixXd;
-public:
+
+ public:
   RadarLidarEKF();
   void processMeasurement(const MeasurementPackage &measurement_pack);
 
-  const VectorXd & getState() const { return x_; };
-private:
-  using update_fn = std::function<VectorXd(const VectorXd & x, const VectorXd & z)>;
+  const VectorXd &getState() const { return x_; };
+
+ private:
+  using update_fn = std::function<VectorXd(const VectorXd &x, const VectorXd &z)>;
 
   void initializeWithRadar(const MeasurementPackage &measurement_pack);
   void initializeWithLidar(const MeasurementPackage &measurement_pack);
@@ -36,7 +39,7 @@ private:
     vY,
   };
   static constexpr size_t kNumStates = 4;
-  static constexpr size_t kNumLidarStates = 2; // position in x/y
+  static constexpr size_t kNumLidarStates = 2;  // position in x/y
   static constexpr size_t kNumRadarStates = 3;
 
   static constexpr double kNoiseAx = 9.0;

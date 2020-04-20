@@ -1,6 +1,8 @@
 #include <math.h>
 #include <uWS/uWS.h>
+
 #include <iostream>
+
 #include "json.hpp"
 #include "radar_lidar_ekf.h"
 #include "tools.h"
@@ -22,8 +24,7 @@ string hasData(string s) {
   auto b2 = s.find_first_of("]");
   if (found_null != string::npos) {
     return "";
-  }
-  else if (b1 != string::npos && b2 != string::npos) {
+  } else if (b1 != string::npos && b2 != string::npos) {
     return s.substr(b1, b2 - b1 + 1);
   }
   return "";
@@ -39,9 +40,8 @@ int main() {
   vector<VectorXd> estimations;
   vector<VectorXd> ground_truth;
 
-  h.onMessage([&ekf,&estimations,&ground_truth]
-              (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
-               uWS::OpCode opCode) {
+  h.onMessage([&ekf, &estimations, &ground_truth](uWS::WebSocket<uWS::SERVER> ws, char *data,
+                                                  size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -85,7 +85,7 @@ int main() {
             iss >> ro;
             iss >> theta;
             iss >> ro_dot;
-            meas_package.raw_measurements_ << ro,theta, ro_dot;
+            meas_package.raw_measurements_ << ro, theta, ro_dot;
             iss >> timestamp;
             meas_package.timestamp_ = timestamp;
           }
@@ -114,11 +114,11 @@ int main() {
 
           VectorXd estimate(4);
 
-          const VectorXd & x = ekf.getState();
+          const VectorXd &x = ekf.getState();
           double p_x = x(0);
           double p_y = x(1);
-          double v1  = x(2);
-          double v2  = x(3);
+          double v1 = x(2);
+          double v2 = x(3);
 
           estimate(0) = p_x;
           estimate(1) = p_y;
@@ -132,8 +132,8 @@ int main() {
           json msgJson;
           msgJson["estimate_x"] = p_x;
           msgJson["estimate_y"] = p_y;
-          msgJson["rmse_x"] =  RMSE(0);
-          msgJson["rmse_y"] =  RMSE(1);
+          msgJson["rmse_x"] = RMSE(0);
+          msgJson["rmse_y"] = RMSE(1);
           msgJson["rmse_vx"] = RMSE(2);
           msgJson["rmse_vy"] = RMSE(3);
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
@@ -147,15 +147,13 @@ int main() {
         ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
       }
     }  // end websocket message if
-
-  }); // end h.onMessage
+  });  // end h.onMessage
 
   h.onConnection([](uWS::WebSocket<uWS::SERVER> ws, uWS::HttpRequest req) {
     std::cout << "Connected!!!" << std::endl;
   });
 
-  h.onDisconnection([](uWS::WebSocket<uWS::SERVER> ws, int code,
-                         char *message, size_t length) {
+  h.onDisconnection([](uWS::WebSocket<uWS::SERVER> ws, int code, char *message, size_t length) {
     ws.close();
     std::cout << "Disconnected" << std::endl;
   });
