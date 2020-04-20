@@ -63,6 +63,10 @@ class KalmanFilter {
 
   // measurement covariance matrix
   Eigen::MatrixXd R_;
+
+private:
+  static double wrapAngle(double angle);
+  static Eigen::VectorXd cartesianToPolar(const Eigen::VectorXd & x);
 };
 
 #endif // KALMAN_FILTER_H_
