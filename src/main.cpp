@@ -2,7 +2,7 @@
 #include <uWS/uWS.h>
 #include <iostream>
 #include "json.hpp"
-#include "FusionEKF.h"
+#include "radar_lidar_ekf.h"
 #include "tools.h"
 
 using Eigen::MatrixXd;
@@ -33,13 +33,13 @@ int main() {
   uWS::Hub h;
 
   // Create a Kalman Filter instance
-  FusionEKF fusionEKF;
+  RadarLidarEKF ekf;
 
   // used to compute the RMSE later
   vector<VectorXd> estimations;
   vector<VectorXd> ground_truth;
 
-  h.onMessage([&fusionEKF,&estimations,&ground_truth]
+  h.onMessage([&ekf,&estimations,&ground_truth]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -107,17 +107,18 @@ int main() {
           ground_truth.push_back(gt_values);
 
           // Call ProcessMeasurement(meas_package) for Kalman filter
-          fusionEKF.ProcessMeasurement(meas_package);
+          ekf.processMeasurement(meas_package);
 
           // Push the current estimated x,y positon from the Kalman filter's
           //   state vector
 
           VectorXd estimate(4);
 
-          double p_x = fusionEKF.ekf_.x_(0);
-          double p_y = fusionEKF.ekf_.x_(1);
-          double v1  = fusionEKF.ekf_.x_(2);
-          double v2 = fusionEKF.ekf_.x_(3);
+          const VectorXd & x = ekf.getState();
+          double p_x = x(0);
+          double p_y = x(1);
+          double v1  = x(2);
+          double v2  = x(3);
 
           estimate(0) = p_x;
           estimate(1) = p_y;
