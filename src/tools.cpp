@@ -71,3 +71,26 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
 
   return Hj;
 }
+
+VectorXd Tools::CartesianToPolar(const VectorXd & x) {
+  VectorXd r(3);
+  float px = x(0);
+  float py = x(1);
+  float vx = x(2);
+  float vy = x(3);
+
+  r(0) = ::sqrt(px * px + py * py);
+  r(1) = WrapAngle(::atan2(py, px));
+  r(2) = (px * vx + py * vy) / r(0);
+  return r;
+}
+
+double Tools::WrapAngle(double angle) {
+  while (angle > M_PI) {
+    angle -= 2 * M_PI;
+  }
+  while (angle < -M_PI) {
+    angle += 2 * M_PI;
+  }
+  return angle;
+}
