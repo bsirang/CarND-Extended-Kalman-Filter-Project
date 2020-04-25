@@ -4,7 +4,7 @@ cmake_minimum_required (VERSION 3.5)
 
 add_definitions(-std=c++17)
 
-set(CXX_FLAGS "-Wall -g")
+set(CXX_FLAGS "-Wall")
 set(CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 
 set(sources src/main.cpp src/tools.cpp src/radar_lidar_ekf.cpp src/tools.h src/radar_lidar_ekf.h)
