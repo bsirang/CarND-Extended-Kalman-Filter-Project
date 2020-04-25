@@ -31,8 +31,10 @@ void RadarLidarEKF::processMeasurement(const MeasurementPackage &measurement_pac
 }
 
 void RadarLidarEKF::initializeWithRadar(const MeasurementPackage &measurement_pack) {
-  // previous_timestamp_ = measurement_pack.timestamp_;
-  // is_initialized_ = true;
+  previous_timestamp_ = measurement_pack.timestamp_;
+  VectorXd cart = Tools::PolarToCartesian2D(measurement_pack.raw_measurements_);
+  x_ << cart(0), cart(1), 0.0, 0.0;
+  is_initialized_ = true;
 }
 
 void RadarLidarEKF::initializeWithLidar(const MeasurementPackage &measurement_pack) {
