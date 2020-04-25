@@ -24,6 +24,11 @@ Eigen::MatrixXd CalculateJacobian(const Eigen::VectorXd &x_state);
 Eigen::VectorXd CartesianToPolar(const Eigen::VectorXd &x_state);
 
 /**
+ * A helper function to calculate 2D cartesian coordinates from 2D polar coordinates
+ */
+Eigen::VectorXd PolarToCartesian2D(const Eigen::VectorXd &r);
+
+/**
  * A helper function to wrap a radian angle between -PI and PI
  */
 double WrapAngle(double angle);

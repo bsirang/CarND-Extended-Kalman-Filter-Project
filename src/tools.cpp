@@ -86,6 +86,15 @@ VectorXd Tools::CartesianToPolar(const VectorXd &x) {
   return r;
 }
 
+VectorXd Tools::PolarToCartesian2D(const VectorXd &r) {
+  VectorXd x(2);
+  float rho = r(0);
+  float phi = r(1);
+  x(0) = rho * ::cos(phi);
+  x(1) = rho * ::sin(phi);
+  return x;
+}
+
 double Tools::WrapAngle(double angle) {
   while (angle > M_PI) {
     angle -= 2 * M_PI;
